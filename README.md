@@ -4,4 +4,5 @@ Based/Inspired by [REPOConfig](https://github.com/IsThatTheRealNick/REPOConfig)
 
 # Manual Installation
 - Install [Bepinex 5](https://github.com/BepInEx/BepInEx)
+- Install [WKLib](https://github.com/monksilly/WKLib/)
 - Place ModMenu.dll in "[Game Folder]/BepInEx/plugins"
