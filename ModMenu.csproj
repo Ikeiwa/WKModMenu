@@ -37,10 +37,6 @@
       <HintPath>$(GameAssemblyDir)\DarkMachineUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="WKLib">
-      <HintPath>$(PluginBuildDir)\MonkSilly-WKLib\WKLib.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">

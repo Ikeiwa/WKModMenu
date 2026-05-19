@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using WKLib.API.Input;
 
 namespace ModMenu.Behaviors;
 
