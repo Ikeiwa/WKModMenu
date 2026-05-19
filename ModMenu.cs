@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
+using ModMenu.Behaviors;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -62,13 +63,13 @@ internal sealed class ModMenu
             new Color(0.3868f, 0.3868f, 0.3868f, 1));
         foreach (var config in _configs)
         {
-            var modMenu = CreateModMenu(config.Value);
+            var modMenu = CreateModMenu(config.Value, out var firstElement);
             modMenu.SetActive(false);
-            tabGroup.AddTab(Templates.TabButton, config.Key, modMenu);
+            tabGroup.AddTab(Templates.TabButton, config.Key, modMenu, firstElement);
         }
     }
 
-    private static GameObject CreateModMenu(ConfigEntryBase[] entries)
+    private static GameObject CreateModMenu(ConfigEntryBase[] entries, out Selectable firstElement)
     {
         var scrollRect = UI.CreateScrollRect(_modMenuPanel);
         scrollRect.viewport.GetComponent<RectMask2D>().softness = new Vector2Int(10, 0);
@@ -84,7 +85,8 @@ internal sealed class ModMenu
         scrollLayout.childForceExpandHeight = true;
         scrollLayout.spacing = 0;
         scrollLayout.childAlignment = TextAnchor.UpperLeft;
-        
+
+        firstElement = null;
         var groups = entries.GroupBy(entry => entry.Definition.Section);
 
         foreach (var group in groups)
@@ -189,8 +191,17 @@ internal sealed class ModMenu
                             entry.BoxedValue = enumValue;
                         });
                         enumDropDown.SetValueWithoutNotify(values.IndexOf(entry.BoxedValue.ToString()));
+
+                        if (enumType == typeof(KeyCode))
+                            enumDropDown.gameObject.AddComponent<KeyCodeDropdown>();
+                        
                         columnFill += ((RectTransform)Templates.Dropdown.transform).rect.height + spacing;
                         break;
+                }
+
+                if (!firstElement)
+                {
+                    firstElement = column.GetChild(column.childCount - 1).GetComponentInChildren<Selectable>(true);
                 }
 
                 if (columnFill >= maxHeight - 50)
