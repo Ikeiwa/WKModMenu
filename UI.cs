@@ -123,6 +123,35 @@ public static class UI
 
         return dropdown;
     }
+    
+    public static KeyCodeInput CreateKeyBindingInput(RectTransform parent, string label,
+        UnityAction<KeyCode> onValueChanged = null,
+        Vector2 size = default)
+    {
+        var keyBindingObj = Object.Instantiate(Templates.KeyBindingInput);
+        var transform = keyBindingObj.GetComponent<RectTransform>();
+        transform.SetParent(parent);
+        transform.localPosition = Vector3.zero;
+        transform.localScale = Vector3.one;
+        transform.localRotation = Quaternion.identity;
+        if (size != default)
+            transform.sizeDelta = size;
+
+        var keyBinding = keyBindingObj.GetComponent<KeyCodeInput>();
+
+        keyBinding.onValueChanged.m_PersistentCalls.Clear();
+        keyBinding.onValueChanged.RemoveAllListeners();
+        if (onValueChanged != null)
+            keyBinding.onValueChanged.AddListener(onValueChanged);
+        
+        var dropdownLabel = keyBindingObj.GetComponent<TMP_Text>();
+        dropdownLabel.text = label;
+        dropdownLabel.fontSizeMin = 0;
+        dropdownLabel.fontSizeMax = dropdownLabel.fontSize;
+        dropdownLabel.enableAutoSizing = true;
+
+        return keyBinding;
+    }
 
     public static SubmitSlider CreateSlider(RectTransform parent, string label,
         UnityAction<float> onValueChanged = null, float minValue = 0.0f,
@@ -204,7 +233,7 @@ public static class UI
     }
 
     public static UI_TabGroup CreateTabGroup(RectTransform parent, GameObject target = null, bool vertical = false,
-        bool supportGamepad = true, Color? closeColor = null, Color? openColor = null)
+        bool supportGamepad = true, Color? closeColor = null, Color? openColor = null, string tabLeftButton = "TabMainLeft", string tabRightButton = "TabMainRight")
     {
         GameObject tabGroupObj = target;
         if (!tabGroupObj)
@@ -232,8 +261,8 @@ public static class UI
 
         if (supportGamepad)
         {
-            tabGroup.tabLeftButton = "TabMainLeft";
-            tabGroup.tabRightButton = "TabMainRight";
+            tabGroup.tabLeftButton = tabLeftButton;
+            tabGroup.tabRightButton = tabRightButton;
             Object.Instantiate(Templates.TabGroup.gameObject.Search("LB"), transform);
             Object.Instantiate(Templates.TabGroup.gameObject.Search("RB.02"), transform);
         }
@@ -278,10 +307,17 @@ public static class UI
         return tabButton;
     }
 
-    public static ScrollRect CreateScrollRect(RectTransform parent)
+    public static ScrollRect CreateScrollRect(RectTransform parent, bool supportGamepad = false)
     {
         var rectObj = Object.Instantiate(Templates.ScrollRect, parent, false);
         var scrollRect = rectObj.GetComponent<ScrollRect>();
+        if (!supportGamepad)
+        {
+            Object.Destroy(rectObj.gameObject.Search("Scroll Holder/Scroll Right Button/RB"));
+            Object.Destroy(rectObj.gameObject.Search("Scroll Holder/Scroll Left Button/LB"));
+            Object.Destroy(rectObj.gameObject.Search("Scroll Holder/Scroll Right Button").GetComponent<UI_PressButtonOnInput>());
+            Object.Destroy(rectObj.gameObject.Search("Scroll Holder/Scroll Left Button").GetComponent<UI_PressButtonOnInput>());
+        }
 
         scrollRect.content.anchorMin = new Vector2(0, 0);
         scrollRect.content.anchorMax = new Vector2(0, 1);

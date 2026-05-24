@@ -16,15 +16,24 @@ public static class Extensions
         while (path.Count > 0)
         {
             string current = path.Dequeue();
+
             bool found = false;
-            for (int i = 0; i < searched.childCount; i++)
+            if (current.Equals("..") && searched.parent)
             {
-                var child = searched.GetChild(i);
-                if (!current.Equals(child.gameObject.name)) continue;
-                
-                searched = child;
                 found = true;
-                break;
+                searched = searched.parent;
+            }
+            else
+            {
+                for (int i = 0; i < searched.childCount; i++)
+                {
+                    var child = searched.GetChild(i);
+                    if (!current.Equals(child.gameObject.name)) continue;
+                
+                    searched = child;
+                    found = true;
+                    break;
+                }
             }
 
             if (!found) return null;

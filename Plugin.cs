@@ -8,6 +8,7 @@ using ModMenu.Behaviors;
 namespace ModMenu
 {
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    [BepInDependency(WKLib.WKLibPlugin.GUID)]
     internal sealed class Plugin : BaseUnityPlugin
     {
         public static ManualLogSource Log { get; private set; }

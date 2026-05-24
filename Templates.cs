@@ -19,6 +19,7 @@ public static class Templates
     public static UI_TabGroup TabGroup;
     public static ScrollRect ScrollRect;
     public static TMP_Text Label;
+    public static KeyCodeInput KeyBindingInput;
 
     private static RectTransform _settingsRoot;
     private static GameObject _templateContainer;
@@ -68,6 +69,7 @@ public static class Templates
         Object.Destroy(inputFieldRoot.GetComponent<TMP_Dropdown>());
         Object.Destroy(inputFieldRoot.Search("Arrow"));
         Object.Destroy(inputFieldRoot.Search("Template"));
+        Object.Destroy(InputField.GetComponent<Settings_Resolution>());
         var inputFieldText = inputFieldRoot.Search("Label");
         var inputPlaceholder = Object.Instantiate(inputFieldText, inputFieldText.transform.parent, false)
             .GetComponent<TMP_Text>();
@@ -78,6 +80,19 @@ public static class Templates
         inputFieldComp.placeholder = inputPlaceholder;
         inputFieldComp.fontAsset = inputPlaceholder.font;
         inputFieldComp.pointSize = inputPlaceholder.fontSize;
+        
+        KeyBindingInput = MakeTemplate(Dropdown).AddComponent<KeyCodeInput>();
+        if (!CheckValidity(KeyBindingInput, "KeyBindingInput")) return;
+        KeyBindingInput.gameObject.name = "KeyBindingInput";
+        var keyBindingRoot = KeyBindingInput.transform.GetChild(0);
+        keyBindingRoot.gameObject.AddComponent<RectMask2D>();
+        Object.Destroy(keyBindingRoot.GetComponent<TMP_Dropdown>());
+        Object.Destroy(keyBindingRoot.Search("Arrow"));
+        Object.Destroy(keyBindingRoot.Search("Template"));
+        Object.Destroy(KeyBindingInput.GetComponent<Settings_Resolution>());
+        var keyBindingButton = KeyBindingInput.gameObject.AddComponent<Button>();
+        keyBindingButton.targetGraphic = keyBindingRoot.GetComponent<Graphic>();
+        keyBindingButton.colors = dropdownComp.colors;
 
         Slider = MakeTemplate(_settingsRoot.Search("Video Settings/Options Tab/Video/SliderAsset - Brightness"));
         if (!CheckValidity(Slider, "slider")) return;

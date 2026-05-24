@@ -9,7 +9,7 @@
     <LangVersion>latest</LangVersion>
     <GameBaseDir>F:\Steam\steamapps\common\White Knuckle</GameBaseDir>
     <GameAssemblyDir>$(GameBaseDir)\White Knuckle_Data\Managed</GameAssemblyDir>
-    <PluginBuildDir>C:\OtherPrograms\Gale\Data\white-knuckle\profiles\Default\BepInEx\plugins</PluginBuildDir>
+    <PluginBuildDir>$(GameBaseDir)\BepInEx\plugins</PluginBuildDir>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,6 +37,14 @@
       <HintPath>$(GameAssemblyDir)\DarkMachineUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="WKLib">
+      <HintPath>$(PluginBuildDir)\WKLib\WKLib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.InputSystem">
+      <HintPath>$(GameAssemblyDir)\Unity.InputSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
@@ -44,6 +52,6 @@
   </ItemGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(TargetPath)&quot; &quot;$(PluginBuildDir)&quot; /y /u&#xA;xcopy &quot;$(TargetDir)$(ProjectName).pdb&quot; &quot;$(PluginBuildDir)&quot; /y /u" />
+    <Exec Command="xcopy &quot;$(TargetPath)&quot; &quot;$(PluginBuildDir)&quot; /y&#xA;xcopy &quot;$(TargetDir)$(ProjectName).pdb&quot; &quot;$(PluginBuildDir)&quot; /y" />
   </Target>
 </Project>

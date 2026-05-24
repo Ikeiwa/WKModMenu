@@ -181,6 +181,18 @@ internal sealed class ModMenu
                         columnFill += ((RectTransform)Templates.InputField.transform).rect.height + spacing;
                         break;
                     
+                    case ConfigEntry<KeyCode>:
+                        
+                        var keyBindingInput = UI.CreateKeyBindingInput(column, entryName, key =>
+                        {
+                            entry.BoxedValue = key;
+                        });
+                        keyBindingInput.SetValueWithoutNotify((KeyCode)entry.BoxedValue);
+                        keyBindingInput.Setup(_settingsMenuTransform);
+                        
+                        columnFill += ((RectTransform)Templates.KeyBindingInput.transform).rect.height + spacing;
+                        break;
+                    
                     case not null when entry.SettingType.IsSubclassOf(typeof(Enum)):
                         var enumType = entry.SettingType;
                         var values = Enum.GetNames(enumType).ToList();
@@ -193,7 +205,7 @@ internal sealed class ModMenu
                         enumDropDown.SetValueWithoutNotify(values.IndexOf(entry.BoxedValue.ToString()));
 
                         if (enumType == typeof(KeyCode))
-                            enumDropDown.gameObject.AddComponent<KeyCodeDropdown>();
+                            enumDropDown.gameObject.AddComponent<KeyCodeInput>();
                         
                         columnFill += ((RectTransform)Templates.Dropdown.transform).rect.height + spacing;
                         break;
