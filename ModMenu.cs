@@ -121,7 +121,7 @@ internal sealed class ModMenu
                             var slider = UI.CreateSlider(column, entryName, value =>
                             {
                                 entry.BoxedValue = value;
-                            }, min, max, 0, "0");
+                            }, min, max, 0);
                             slider.SetValueWithoutNotify((float)entry.BoxedValue);
                             columnFill += ((RectTransform)Templates.Slider.transform).rect.height + spacing;
                         }
