@@ -100,114 +100,214 @@ internal sealed class ModMenu
             foreach (var entry in group)
             {
                 var entryName = PrettifyName(entry.Definition.Key);
-                
+
                 switch (entry)
                 {
                     case ConfigEntry<bool>:
-                        var toggle = UI.CreateToggle(column, entryName, isOn =>
-                        {
-                            entry.BoxedValue = isOn;
-                        });
-                        toggle.SetIsOnWithoutNotify((bool)entry.BoxedValue);
+                        UI.CreateToggle(column, entryName, (bool)entry.BoxedValue,
+                            isOn => { entry.BoxedValue = isOn; });
                         columnFill += ((RectTransform)Templates.Toggle.transform).rect.height + spacing;
                         break;
-                    
+
+                    case ConfigEntry<float>
+                        when entry.Description.AcceptableValues is AcceptableValueRange<float> acceptableFloatValueRange
+                        :
+                        var minFloat = acceptableFloatValueRange.MinValue;
+                        var maxFloat = acceptableFloatValueRange.MaxValue;
+
+                        UI.CreateSlider(column, entryName, (float)entry.BoxedValue,
+                            value => { entry.BoxedValue = value; }, minFloat, maxFloat, 0);
+
+                        columnFill += ((RectTransform)Templates.Slider.transform).rect.height + spacing;
+                        break;
+
                     case ConfigEntry<float>:
-                        if (entry.Description.AcceptableValues is AcceptableValueRange<float> acceptableFloatValueRange)
-                        {
-                            var min = acceptableFloatValueRange.MinValue;
-                            var max = acceptableFloatValueRange.MaxValue;
-                            
-                            var slider = UI.CreateSlider(column, entryName, value =>
+                        UI.CreateInputField(column, entryName, entry.BoxedValue.ToString(),
+                            value =>
                             {
-                                entry.BoxedValue = value;
-                            }, min, max, 0);
-                            slider.SetValueWithoutNotify((float)entry.BoxedValue);
-                            columnFill += ((RectTransform)Templates.Slider.transform).rect.height + spacing;
-                        }
-                        else
-                        {
-                            var floatInputField = UI.CreateInputField(column, entryName, value =>
-                            {
-                                if(float.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture,out var input))
+                                if (float.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture,
+                                        out var input))
                                     entry.BoxedValue = input;
-                            }, TMP_InputField.ContentType.DecimalNumber, TMP_InputField.CharacterValidation.Decimal);
-                            floatInputField.SetTextWithoutNotify(entry.BoxedValue.ToString());
-                            columnFill += ((RectTransform)Templates.InputField.transform).rect.height + spacing;
-                        }
-                        break;
-                    
-                    case ConfigEntry<int>:
-                        if (entry.Description.AcceptableValues is AcceptableValueRange<int> acceptableIntValueRange)
-                        {
-                            var min = acceptableIntValueRange.MinValue;
-                            var max = acceptableIntValueRange.MaxValue;
-                            
-                            var slider = UI.CreateSlider(column, entryName, value =>
-                            {
-                                entry.BoxedValue = (int)value;
-                            }, min, max, 1, "0");
-                            slider.SetValueWithoutNotify((int)entry.BoxedValue);
-                            columnFill += ((RectTransform)Templates.Slider.transform).rect.height + spacing;
-                        }
-                        else
-                        {
-                            var intInputField = UI.CreateInputField(column, entryName, value =>
-                            {
-                                if(int.TryParse(value, out var input))
-                                    entry.BoxedValue = input;
-                            }, TMP_InputField.ContentType.IntegerNumber, TMP_InputField.CharacterValidation.Integer);
-                            intInputField.SetTextWithoutNotify(entry.BoxedValue.ToString());
-                            columnFill += ((RectTransform)Templates.InputField.transform).rect.height + spacing;
-                        }
-                        break;
-                    
-                    case ConfigEntry<string> when entry.Description.AcceptableValues is AcceptableValueList<string> acceptableValueList:
-                        var valueList = acceptableValueList.AcceptableValues.ToList();
-                        var dropDown = UI.CreateDropdown(column, entryName, valueList, value =>
-                        {
-                            entry.BoxedValue = valueList[value];
-                        });
-                        dropDown.SetValueWithoutNotify(valueList.IndexOf(entry.BoxedValue.ToString()));
-                        columnFill += ((RectTransform)Templates.Dropdown.transform).rect.height + spacing;
-                        break;
-                    
-                    case ConfigEntry<string>:
-                        var inputField = UI.CreateInputField(column, entryName, value =>
-                        {
-                            entry.BoxedValue = value;
-                        });
-                        inputField.SetTextWithoutNotify(entry.BoxedValue.ToString());
+                            }, TMP_InputField.ContentType.DecimalNumber,
+                            TMP_InputField.CharacterValidation.Decimal);
+
                         columnFill += ((RectTransform)Templates.InputField.transform).rect.height + spacing;
                         break;
-                    
+
+                    case ConfigEntry<int>
+                        when entry.Description.AcceptableValues is AcceptableValueRange<int> acceptableIntValueRange:
+                        var minInt = acceptableIntValueRange.MinValue;
+                        var maxInt = acceptableIntValueRange.MaxValue;
+
+                        UI.CreateSlider(column, entryName, (int)entry.BoxedValue,
+                            value => { entry.BoxedValue = (int)value; }, minInt, maxInt, 1, "0");
+
+                        columnFill += ((RectTransform)Templates.Slider.transform).rect.height + spacing;
+                        break;
+
+                    case ConfigEntry<int>:
+                        UI.CreateInputField(column, entryName, entry.BoxedValue.ToString(),
+                            value =>
+                            {
+                                if (int.TryParse(value, out var input))
+                                    entry.BoxedValue = input;
+                            }, TMP_InputField.ContentType.IntegerNumber,
+                            TMP_InputField.CharacterValidation.Integer);
+
+                        columnFill += ((RectTransform)Templates.InputField.transform).rect.height + spacing;
+                        break;
+
+                    case ConfigEntry<string>
+                        when entry.Description.AcceptableValues is AcceptableValueList<string> acceptableValueList:
+                        var valueList = acceptableValueList.AcceptableValues.ToList();
+                        UI.CreateDropdown(column, entryName, valueList,
+                            valueList.IndexOf(entry.BoxedValue.ToString()),
+                            value => { entry.BoxedValue = valueList[value]; });
+
+                        columnFill += ((RectTransform)Templates.Dropdown.transform).rect.height + spacing;
+                        break;
+
+                    case ConfigEntry<string>:
+                        UI.CreateInputField(column, entryName, entry.BoxedValue.ToString(),
+                            value => { entry.BoxedValue = value; });
+
+                        columnFill += ((RectTransform)Templates.InputField.transform).rect.height + spacing;
+                        break;
+
                     case ConfigEntry<KeyCode>:
-                        
-                        var keyBindingInput = UI.CreateKeyBindingInput(column, entryName, key =>
-                        {
-                            entry.BoxedValue = key;
-                        });
-                        keyBindingInput.SetValueWithoutNotify((KeyCode)entry.BoxedValue);
-                        keyBindingInput.Setup(_settingsMenuTransform);
-                        
+
+                        UI.CreateKeyBindingInput(column, entryName, (KeyCode)entry.BoxedValue,
+                            key => { entry.BoxedValue = key; }).Setup(_settingsMenuTransform);
+
                         columnFill += ((RectTransform)Templates.KeyBindingInput.transform).rect.height + spacing;
                         break;
-                    
+
                     case not null when entry.SettingType.IsSubclassOf(typeof(Enum)):
                         var enumType = entry.SettingType;
                         var values = Enum.GetNames(enumType).ToList();
-                        
-                        var enumDropDown = UI.CreateDropdown(column, entryName, values, value =>
-                        {
-                            var enumValue = Enum.Parse(enumType, values[value]);
-                            entry.BoxedValue = enumValue;
-                        });
-                        enumDropDown.SetValueWithoutNotify(values.IndexOf(entry.BoxedValue.ToString()));
 
-                        if (enumType == typeof(KeyCode))
-                            enumDropDown.gameObject.AddComponent<KeyCodeInput>();
-                        
+                        UI.CreateDropdown(column, entryName, values,
+                            values.IndexOf(entry.BoxedValue.ToString()), value =>
+                            {
+                                var enumValue = Enum.Parse(enumType, values[value]);
+                                entry.BoxedValue = enumValue;
+                            });
+
                         columnFill += ((RectTransform)Templates.Dropdown.transform).rect.height + spacing;
+                        break;
+
+                    case ConfigEntry<Color>:
+                        var colorValue = (Color)entry.BoxedValue;
+                        UI.CreateQuadInputField(column, entryName, colorValue.r.ToString(CultureInfo.InvariantCulture),
+                            colorValue.g.ToString(CultureInfo.InvariantCulture),
+                            colorValue.b.ToString(CultureInfo.InvariantCulture),
+                            colorValue.a.ToString(CultureInfo.InvariantCulture),
+                            (val1, val2, val3, val4) =>
+                            {
+                                if (float.TryParse(val1, out var res1) && float.TryParse(val2, out var res2) &&
+                                    float.TryParse(val3, out var res3) && float.TryParse(val4, out var res4))
+                                {
+                                    entry.BoxedValue = new Color(res1, res2, res3, res4);
+                                }
+                            }, TMP_InputField.ContentType.DecimalNumber, TMP_InputField.CharacterValidation.Decimal
+                            , color1: Color.red, color2: Color.green, color3: Color.blue);
+
+                        columnFill += ((RectTransform)Templates.InputField.transform).rect.height + spacing;
+                        break;
+
+                    case ConfigEntry<Vector2>:
+                        var vector2Value = (Vector2)entry.BoxedValue;
+                        UI.CreateDualInputField(column, entryName,
+                            vector2Value.x.ToString(CultureInfo.InvariantCulture),
+                            vector2Value.y.ToString(CultureInfo.InvariantCulture),
+                            (val1, val2) =>
+                            {
+                                if (float.TryParse(val1, out var res1) && float.TryParse(val2, out var res2))
+                                {
+                                    entry.BoxedValue = new Vector2(res1, res2);
+                                }
+                            }, TMP_InputField.ContentType.DecimalNumber, TMP_InputField.CharacterValidation.Decimal
+                            , color1: Color.red, color2: Color.green);
+
+                        columnFill += ((RectTransform)Templates.InputField.transform).rect.height + spacing;
+                        break;
+
+                    case ConfigEntry<Vector3>:
+                        var vector3Value = (Vector3)entry.BoxedValue;
+                        UI.CreateTrippleInputField(column, entryName,
+                            vector3Value.x.ToString(CultureInfo.InvariantCulture),
+                            vector3Value.y.ToString(CultureInfo.InvariantCulture),
+                            vector3Value.z.ToString(CultureInfo.InvariantCulture),
+                            (val1, val2, val3) =>
+                            {
+                                if (float.TryParse(val1, out var res1) && float.TryParse(val2, out var res2) &&
+                                    float.TryParse(val3, out var res3))
+                                {
+                                    entry.BoxedValue = new Vector3(res1, res2, res3);
+                                }
+                            }, TMP_InputField.ContentType.DecimalNumber, TMP_InputField.CharacterValidation.Decimal
+                            , color1: Color.red, color2: Color.green, color3: Color.blue);
+
+                        columnFill += ((RectTransform)Templates.InputField.transform).rect.height + spacing;
+                        break;
+
+                    case ConfigEntry<Vector4>:
+                        var vector4Value = (Vector4)entry.BoxedValue;
+                        UI.CreateQuadInputField(column, entryName,
+                            vector4Value.x.ToString(CultureInfo.InvariantCulture),
+                            vector4Value.y.ToString(CultureInfo.InvariantCulture),
+                            vector4Value.z.ToString(CultureInfo.InvariantCulture),
+                            vector4Value.y.ToString(CultureInfo.InvariantCulture),
+                            (val1, val2, val3, val4) =>
+                            {
+                                if (float.TryParse(val1, out var res1) && float.TryParse(val2, out var res2) &&
+                                    float.TryParse(val3, out var res3) && float.TryParse(val4, out var res4))
+                                {
+                                    entry.BoxedValue = new Vector4(res1, res2, res3, res4);
+                                }
+                            }, TMP_InputField.ContentType.DecimalNumber, TMP_InputField.CharacterValidation.Decimal
+                            , color1: Color.red, color2: Color.green, color3: Color.blue);
+
+                        columnFill += ((RectTransform)Templates.InputField.transform).rect.height + spacing;
+                        break;
+
+                    case ConfigEntry<Quaternion>:
+                        var quaternionValue = (Quaternion)entry.BoxedValue;
+                        UI.CreateQuadInputField(column, entryName,
+                            quaternionValue.x.ToString(CultureInfo.InvariantCulture),
+                            quaternionValue.y.ToString(CultureInfo.InvariantCulture),
+                            quaternionValue.z.ToString(CultureInfo.InvariantCulture),
+                            quaternionValue.y.ToString(CultureInfo.InvariantCulture),
+                            (val1, val2, val3, val4) =>
+                            {
+                                if (float.TryParse(val1, out var res1) && float.TryParse(val2, out var res2) &&
+                                    float.TryParse(val3, out var res3) && float.TryParse(val4, out var res4))
+                                {
+                                    entry.BoxedValue = new Quaternion(res1, res2, res3, res4);
+                                }
+                            }, TMP_InputField.ContentType.DecimalNumber, TMP_InputField.CharacterValidation.Decimal
+                            , color1: Color.red, color2: Color.green, color3: Color.blue);
+
+                        columnFill += ((RectTransform)Templates.InputField.transform).rect.height + spacing;
+                        break;
+
+                    case ConfigEntry<Rect>:
+                        var rectValue = (Rect)entry.BoxedValue;
+                        UI.CreateQuadInputField(column, entryName, rectValue.x.ToString(CultureInfo.InvariantCulture),
+                            rectValue.y.ToString(CultureInfo.InvariantCulture),
+                            rectValue.width.ToString(CultureInfo.InvariantCulture),
+                            rectValue.height.ToString(CultureInfo.InvariantCulture),
+                            (val1, val2, val3, val4) =>
+                            {
+                                if (float.TryParse(val1, out var res1) && float.TryParse(val2, out var res2) &&
+                                    float.TryParse(val3, out var res3) && float.TryParse(val4, out var res4))
+                                {
+                                    entry.BoxedValue = new Rect(res1, res2, res3, res4);
+                                }
+                            }, TMP_InputField.ContentType.DecimalNumber, TMP_InputField.CharacterValidation.Decimal
+                        );
+
+                        columnFill += ((RectTransform)Templates.InputField.transform).rect.height + spacing;
                         break;
                 }
 
@@ -242,7 +342,7 @@ internal sealed class ModMenu
         layout.childForceExpandHeight = false;
         layout.childForceExpandWidth = true;
         layout.spacing = 5;
-        
+
         return column;
     }
 

@@ -39,7 +39,7 @@ public static class Templates
         Button = MakeTemplate(_settingsRoot.Search("Save And Close"));
         Button.name = "Button";
         if (!CheckValidity(Button, "button")) return;
-        Object.Destroy(Button.GetComponent<UI_CloseButtonOnBack>());
+        Object.DestroyImmediate(Button.GetComponent<UI_CloseButtonOnBack>());
         Button.GetComponent<UT_ButtonAudio>().onSubmit = false;
 
         MainTabButton = MakeTemplate(_settingsRoot.Search("Tab Selection Hor/Accessibility"));
@@ -50,12 +50,12 @@ public static class Templates
         Toggle = MakeTemplate(_settingsRoot.Search("Video Settings/Options Tab/Video/Fullscreen Toggle"));
         if (!CheckValidity(Toggle, "toggle")) return;
         Toggle.name = "Toggle";
-        Object.Destroy(Toggle.GetComponent<ToggleSettingsBinder>());
+        Object.DestroyImmediate(Toggle.GetComponent<ToggleSettingsBinder>());
 
         Dropdown = MakeTemplate(_settingsRoot.Search("Video Settings/Options Tab/Video/Screen Resolution"));
         if (!CheckValidity(Dropdown, "dropdown")) return;
         Dropdown.name = "Dropdown";
-        Object.Destroy(Dropdown.GetComponent<Settings_Resolution>());
+        Object.DestroyImmediate(Dropdown.GetComponent<Settings_Resolution>());
         var dropdownComp = Dropdown.GetComponentInChildren<TMP_Dropdown>(true);
         dropdownComp.ClearOptions();
         
@@ -66,15 +66,15 @@ public static class Templates
         var inputFieldRoot = InputField.transform.GetChild(0);
         inputFieldRoot.name = "Text Area";
         inputFieldRoot.gameObject.AddComponent<RectMask2D>();
-        Object.Destroy(inputFieldRoot.GetComponent<TMP_Dropdown>());
-        Object.Destroy(inputFieldRoot.Search("Arrow"));
-        Object.Destroy(inputFieldRoot.Search("Template"));
-        Object.Destroy(InputField.GetComponent<Settings_Resolution>());
+        Object.DestroyImmediate(inputFieldRoot.GetComponent<TMP_Dropdown>());
+        Object.DestroyImmediate(inputFieldRoot.Search("Arrow"));
+        Object.DestroyImmediate(inputFieldRoot.Search("Template"));
+        Object.DestroyImmediate(InputField.GetComponent<Settings_Resolution>());
         var inputFieldText = inputFieldRoot.Search("Label");
         var inputPlaceholder = Object.Instantiate(inputFieldText, inputFieldText.transform.parent, false)
             .GetComponent<TMP_Text>();
         inputPlaceholder.color = new Color(1,1,1,0.5f);
-        var inputFieldComp = InputField.AddComponent<TMP_InputField>();
+        var inputFieldComp = inputFieldRoot.gameObject.AddComponent<TMP_InputField>();
         inputFieldComp.textViewport = inputFieldRoot.transform as RectTransform;
         inputFieldComp.textComponent = inputFieldText.GetComponent<TMP_Text>();
         inputFieldComp.placeholder = inputPlaceholder;
@@ -86,10 +86,10 @@ public static class Templates
         KeyBindingInput.gameObject.name = "KeyBindingInput";
         var keyBindingRoot = KeyBindingInput.transform.GetChild(0);
         keyBindingRoot.gameObject.AddComponent<RectMask2D>();
-        Object.Destroy(keyBindingRoot.GetComponent<TMP_Dropdown>());
-        Object.Destroy(keyBindingRoot.Search("Arrow"));
-        Object.Destroy(keyBindingRoot.Search("Template"));
-        Object.Destroy(KeyBindingInput.GetComponent<Settings_Resolution>());
+        Object.DestroyImmediate(keyBindingRoot.GetComponent<TMP_Dropdown>());
+        Object.DestroyImmediate(keyBindingRoot.Search("Arrow"));
+        Object.DestroyImmediate(keyBindingRoot.Search("Template"));
+        Object.DestroyImmediate(KeyBindingInput.GetComponent<Settings_Resolution>());
         var keyBindingButton = KeyBindingInput.gameObject.AddComponent<Button>();
         keyBindingButton.targetGraphic = keyBindingRoot.GetComponent<Graphic>();
         keyBindingButton.colors = dropdownComp.colors;
@@ -97,10 +97,10 @@ public static class Templates
         Slider = MakeTemplate(_settingsRoot.Search("Video Settings/Options Tab/Video/SliderAsset - Brightness"));
         if (!CheckValidity(Slider, "slider")) return;
         Slider.name = "Slider";
-        Object.Destroy(Slider.GetComponentInChildren<SliderSettingBinder>(true));
+        Object.DestroyImmediate(Slider.GetComponentInChildren<SliderSettingBinder>(true));
         var sliderText = Slider.GetComponentInChildren<TextSettingsBinder>(true);
         sliderText.gameObject.AddComponent<SliderTextSync>();
-        Object.Destroy(sliderText);
+        Object.DestroyImmediate(sliderText);
 
         TabButton = MakeTemplate(_settingsRoot.Search("Controls Page/Controls Page Tab Selector/Options"));
         if (!CheckValidity(TabButton, "tabButton")) return;
@@ -113,7 +113,7 @@ public static class Templates
         SettingsPanel = MakeTemplate(_settingsRoot.Search("Video Settings"));
         if (!CheckValidity(SettingsPanel, "SettingsPanel")) return;
         SettingsPanel.name = "SettingsPanel";
-        Object.Destroy(SettingsPanel.Search("Options Tab"));
+        Object.DestroyImmediate(SettingsPanel.Search("Options Tab"));
 
         TabGroup = MakeTemplate(_settingsRoot.Search("Tab Selection Hor")).GetComponent<UI_TabGroup>();
         if (!CheckValidity(TabGroup, "TabGroup")) return;
@@ -124,7 +124,7 @@ public static class Templates
         ScrollRect.gameObject.name = "ScrollRect";
         var scrollRectContent = ScrollRect.content;
         for (int i = scrollRectContent.childCount - 1; i >= 0; i--)
-            Object.Destroy(scrollRectContent.GetChild(i).gameObject);
+            Object.DestroyImmediate(scrollRectContent.GetChild(i).gameObject);
         scrollRectContent.GetComponent<ContentSizeFitter>().enabled = true;
 
         _loaded = true;
