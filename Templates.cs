@@ -47,12 +47,12 @@ public static class Templates
         MainTabButton.name = "MainTabButton";
         MainTabButton.GetComponent<Button>().onClick.RemoveAllListeners();
 
-        Toggle = MakeTemplate(_settingsRoot.Search("Video Settings/Options Tab/Video/Fullscreen Toggle"));
+        Toggle = MakeTemplate(_settingsRoot.Search("Video Settings/Main Panel/Tab - Video/Column - Video/Fullscreen Toggle"));
         if (!CheckValidity(Toggle, "toggle")) return;
         Toggle.name = "Toggle";
         Object.DestroyImmediate(Toggle.GetComponent<ToggleSettingsBinder>());
 
-        Dropdown = MakeTemplate(_settingsRoot.Search("Video Settings/Options Tab/Video/Screen Resolution"));
+        Dropdown = MakeTemplate(_settingsRoot.Search("Video Settings/Main Panel/Tab - Video/Column - Video/Screen Resolution"));
         if (!CheckValidity(Dropdown, "dropdown")) return;
         Dropdown.name = "Dropdown";
         Object.DestroyImmediate(Dropdown.GetComponent<Settings_Resolution>());
@@ -94,7 +94,7 @@ public static class Templates
         keyBindingButton.targetGraphic = keyBindingRoot.GetComponent<Graphic>();
         keyBindingButton.colors = dropdownComp.colors;
 
-        Slider = MakeTemplate(_settingsRoot.Search("Video Settings/Options Tab/Video/SliderAsset - Brightness"));
+        Slider = MakeTemplate(_settingsRoot.Search("Video Settings/Main Panel/Tab - Video/Column - Video/SliderAsset - Brightness"));
         if (!CheckValidity(Slider, "slider")) return;
         Slider.name = "Slider";
         Object.DestroyImmediate(Slider.GetComponentInChildren<SliderSettingBinder>(true));
@@ -106,14 +106,15 @@ public static class Templates
         if (!CheckValidity(TabButton, "tabButton")) return;
         TabButton.gameObject.name = "TabButton";
 
-        Label = MakeTemplate(_settingsRoot.Search("Video Settings/Options Tab/Video/Video Settings")).GetComponent<TMP_Text>();
+        Label = MakeTemplate(_settingsRoot.Search("Video Settings/Main Panel/Tab - Video/Column - Video/Video Settings")).GetComponent<TMP_Text>();
         if (!CheckValidity(Label, "Label")) return;
         Label.gameObject.name = "Label";
 
         SettingsPanel = MakeTemplate(_settingsRoot.Search("Video Settings"));
         if (!CheckValidity(SettingsPanel, "SettingsPanel")) return;
         SettingsPanel.name = "SettingsPanel";
-        Object.DestroyImmediate(SettingsPanel.Search("Options Tab"));
+        Object.DestroyImmediate(SettingsPanel.Search("Controls Page Tab Selector"));
+        Object.DestroyImmediate(SettingsPanel.Search("Main Panel"));
 
         TabGroup = MakeTemplate(_settingsRoot.Search("Tab Selection Hor")).GetComponent<UI_TabGroup>();
         if (!CheckValidity(TabGroup, "TabGroup")) return;
